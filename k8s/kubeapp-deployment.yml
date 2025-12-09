@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kubeapp
+  template:
+    metadata:
+      labels:
+        app: kubeapp
+    spec:
+      containers:
+      - name: kubeapp
+        image: ikramrsi/kubeapp:v1
+        env:
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: DB_PASSWORD
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_NAME
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_ENV
+        ports:
+        - containerPort: 3000
